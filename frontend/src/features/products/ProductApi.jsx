@@ -8,41 +8,49 @@ export const addProduct=async(data)=>{
         throw error.response.data
     }
 }
-export const fetchProducts=async(filters)=>{
+export const fetchProducts = async (filters) => {
 
-    let queryString=''
+    let queryString = '';
 
-    if(filters.brand){
-        filters.brand.map((brand)=>{
-            queryString+=`brand=${brand}&`
-        })
-    }
-    if(filters.category){
-        filters.category.map((category)=>{
-            queryString+=`category=${category}&`
-        })
+    if (filters.brand) {
+        filters.brand.forEach((brand) => {
+            queryString += `brand=${brand}&`;
+        });
     }
 
-    if(filters.pagination){
-        queryString+=`page=${filters.pagination.page}&limit=${filters.pagination.limit}&`
+    if (filters.category) {
+        filters.category.forEach((category) => {
+            queryString += `category=${category}&`;
+        });
     }
 
-    if(filters.sort){
-        queryString+=`sort=${filters.sort.sort}&order=${filters.sort.order}&`
+    if (filters.pagination) {
+        queryString += `page=${filters.pagination.page}&limit=${filters.pagination.limit}&`;
     }
 
-    if(filters.user){
-        queryString+=`user=${filters.user}&`
+    if (filters.sort) {
+        queryString += `sort=${filters.sort.sort}&order=${filters.sort.order}&`;
     }
-    
+
+    if (filters.user) {
+        queryString += `user=${filters.user}&`;
+    }
+
     try {
-        const res=await axiosi.get(`/products?${queryString}`)
-        const totalResults=await res.headers.get("X-Total-Count")
-        return {data:res.data,totalResults:totalResults}
+        const res = await axiosi.get(`/products?${queryString}`);
+
+        const totalResults = Number(
+            res.headers["x-total-count"] || res.data.length || 0
+        );
+
+        return {
+            data: res.data,
+            totalResults
+        };
     } catch (error) {
-        throw error.response.data
+        throw error.response?.data || error;
     }
-}
+};
 export const fetchProductById=async(id)=>{
     try {
         const res=await axiosi.get(`/products/${id}`)

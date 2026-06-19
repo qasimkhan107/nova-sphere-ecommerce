@@ -35,7 +35,8 @@ const bannerImages=[banner1,banner3,banner2,banner4]
 
 export const ProductList = () => {
     const [filters,setFilters]=useState({})
-    const [page,setPage]=useState(1)
+    const [page,setPage]=useState(() => {
+    return Number(sessionStorage.getItem("productListPage")) || 1})
     const [sort,setSort]=useState(null)
     const theme=useTheme()
 
@@ -85,16 +86,9 @@ export const ProductList = () => {
         setFilters({...filters,category:filterArray})
     }
 
-    useEffect(()=>{
-        window.scrollTo({
-            top:0,
-            behavior:"instant"
-        })
-    },[])
-
-    useEffect(()=>{
-        setPage(1)
-    },[totalResults])
+    // useEffect(()=>{
+    //     setPage(1)
+    // },[totalResults])
 
 
     useEffect(()=>{
@@ -111,6 +105,20 @@ export const ProductList = () => {
         
     },[filters,page,sort])
 
+    useEffect(() => {
+  const savedScroll = sessionStorage.getItem("productListScroll");
+
+  if (savedScroll && products.length > 0) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: Number(savedScroll),
+        behavior: "auto"
+      });
+
+      sessionStorage.removeItem("productListScroll");
+    }, 100);
+  }
+}, [products]);
 
     const handleAddRemoveFromWishlist=(e,productId)=>{
         if(e.target.checked){
@@ -304,7 +312,17 @@ export const ProductList = () => {
                     
                     {/* pagination */}
                     <Stack alignSelf={is488?'center':'flex-end'} mr={is488?0:5} rowGap={2} p={is488?1:0}>
-                        <Pagination size={is488?'medium':'large'} page={page}  onChange={(e,page)=>setPage(page)} count={Math.ceil(totalResults/ITEMS_PER_PAGE)} variant="outlined" shape="rounded" />
+                        <Pagination
+  size={is488 ? 'medium' : 'large'}
+  page={page}
+  onChange={(e, page) => {
+    setPage(page)
+    sessionStorage.setItem("productListPage", page)
+  }}
+  count={Math.ceil(totalResults / ITEMS_PER_PAGE)}
+  variant="outlined"
+  shape="rounded"
+/>
                         <Typography textAlign={'center'}>Showing {(page-1)*ITEMS_PER_PAGE+1} to {page*ITEMS_PER_PAGE>totalResults?totalResults:page*ITEMS_PER_PAGE} of {totalResults} results</Typography>
                     </Stack>    
                 

@@ -53,7 +53,9 @@ function App() {
             <Route path='/order-success/:id' element={<Protected><OrderSuccessPage/></Protected>}/>
             <Route path='/orders' element={<Protected><UserOrdersPage/></Protected>}/>
             <Route path='/wishlist' element={<Protected><WishlistPage/></Protected>}/>
-            </>
+            <Route path="/product-details/:id" element={<Protected><ProductDetailsPage /></Protected>}
+/>
+</>
           )
         }
 
